@@ -10,7 +10,7 @@ var TaskModel = Backbone.Model.extend({
 		description:'',
 		creator:'',
 		assignee:'',
-		status:'unassigned',
+		status:'Unassigned',
 	},
 	assign: function (newUser) {
 		//Change assignment to another person
