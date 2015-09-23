@@ -100,7 +100,8 @@ var CreateTaskView = Backbone.View.extend({
 	addTask : function () {
 		var title = $('#title').val();
 		var desc = $('#desc').val();
-		var newTask = {'title': title, 'description': desc};
+		var creator = localStorage.getItem('userName');
+		var newTask = {'title': title, 'description': desc, 'creator': creator};
 		app.tasks.add(newTask);
 	}
 });
@@ -159,18 +160,23 @@ var UserTasksView = Backbone.View.extend({
 });
 
 var UserView = Backbone.View.extend({
+	id: 'userView',
 	initialize: function () {
+		var logout = '<button id="logout"> Logout </button>';
 		unassignedTasksView = new UnassignedTasksView({collection: app.tasks});
 		userTasksView = new UserTasksView({collection: app.tasks});
 		createTaskView = new CreateTaskView();
 		// unassignedTasksView.render();
 		// userTasksView.render();
-
+		this.$el.append(logout);
 		this.$el.append(unassignedTasksView.$el);
 		this.$el.append(userTasksView.$el);
 		this.$el.append(createTaskView.$el);
 		// this.listenTo(app.tasks, 'change:assignee', this.reassign);
-
+	},
+	events : {
+		'click #logout' : 'logout',
+		'change #users' : 'initialize'
 	},
 	reassign : function (newModel) {
 		// var view = new TaskView({model: newModel});
@@ -181,18 +187,56 @@ var UserView = Backbone.View.extend({
 		// this.$el.append(newModel.$el);
 		// this.render();
 
+	},
+	logout : function () {
+		localStorage.clear();
+		this.$el.hide();
+		$('#loginView').show();
+		// document.location.reload();
 	}
 });
 
 var LoginView = Backbone.View.extend({
-
+	id: 'loginView',
+	render : function () {
+		console.log("LoginView rendering");
+		var welcome = '<h2 id=""></h2>';
+		var selector = $("<select id='users'>");
+		var users = "<option selected='selected'> </option>";
+		var people = app.users.pluck('username');
+		for (var j=0; j<people.length; j++) {
+			users += "<option>" + people[j] + "</option>";
+		}
+		selector.append(users);
+		this.$el.append(selector);
+	},
+	events : {
+		'change #users' : 'setCookie',
+		'click #logout' : 'initialize'
+ 	},
+	initialize : function () {
+		this.listenTo(UserView.logout, 'change', this.render);
+		this.render();
+	},
+	setCookie : function (newUser) {
+		console.log("Cookies are being set");
+		var name = newUser.target.value;
+		console.log(name);
+		localStorage.setItem('userName', name);
+		this.$el.hide();
+		$('#userView').show();
+	},
 });
 
 // generic ctor to represent interface:
 function GUI(users,tasks,el) {
-
+	var loginView = new LoginView({collection: users});
 	var userView = new UserView({collection: tasks});
-	$(el).append(userView.$el);
+	// if(localStorage.getItem('userName')) {
+		$(el).append(userView.$el.hide());
+	// } else {
+		$(el).append(loginView.$el);
+	// }
 	// new task view
 	// attach task view
 
@@ -204,4 +248,4 @@ function GUI(users,tasks,el) {
 }
 
 return GUI;
-}())
+}());
