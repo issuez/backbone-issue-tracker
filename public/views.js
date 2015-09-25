@@ -171,6 +171,7 @@ var UserTasksView = Backbone.View.extend({
 var UserView = Backbone.View.extend({
 	id: 'userView',
 	render : function () {
+		console.log('UserView Rendering');
 		var logout = '<button id="logout"> Logout </button>';
 		// var cookie = localStorage.getItem('userName');
 		// var userTasks = app.tasks.where({'assignee': cookie, 'creator': cookie });
@@ -187,31 +188,33 @@ var UserView = Backbone.View.extend({
 		this.$el.append(createTaskView.$el);
 	},
 	initialize: function () {
+		app.tasks.fetch();
+		app.users.fetch();
 		this.render();
-		app.tasks.add([
-			{
-				title: 'finish project',
-				description: "let's figure out backbone goddammit",
-				creator: 'mitch',
-				assignee: '',
-				status: 'Unassigned'
-			},
-			{
-				title: 'eat a snack',
-				description: "healthy one",
-				creator: 'do',
-				assignee: 'do',
-				status: 'New'
-			},
-			{
-				title: 'Third',
-				description: "not one",
-				creator: 'do',
-				assignee: '',
-				status: 'Unassigned'
-			}
-			// test data here
-		]);
+		// app.tasks.add([
+		// 	{
+		// 		title: 'finish project',
+		// 		description: "let's figure out backbone goddammit",
+		// 		creator: 'mitch',
+		// 		assignee: '',
+		// 		status: 'Unassigned'
+		// 	},
+		// 	{
+		// 		title: 'eat a snack',
+		// 		description: "healthy one",
+		// 		creator: 'do',
+		// 		assignee: 'do',
+		// 		status: 'New'
+		// 	},
+		// 	{
+		// 		title: 'Third',
+		// 		description: "not one",
+		// 		creator: 'do',
+		// 		assignee: '',
+		// 		status: 'Unassigned'
+		// 	}
+		// 	// test data here
+		// ]);
 		// this.listenTo(app.tasks, 'change:assignee', this.reassign);
 	},
 	events : {
@@ -245,7 +248,7 @@ var LoginView = Backbone.View.extend({
 		var welcome = '<h2 id=""></h2>';
 		var selector = $("<select id='users'>");
 		var users = "<option selected='selected'> </option>";
-		var people = app.users.pluck('username');
+		var people = app.users.fetch('username');
 		for (var j=0; j<people.length; j++) {
 			users += "<option>" + people[j] + "</option>";
 		}
@@ -265,7 +268,7 @@ var LoginView = Backbone.View.extend({
 		var name = newUser.target.value;
 		// console.log(name);
 		localStorage.setItem('userName', name);
-		this.$el.hide();
+		// this.$el.hide();
 		// $('#userView').show();
 		var userView = new UserView({collection: app.tasks});
 		$('#app').append(userView.$el);

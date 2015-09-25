@@ -1,11 +1,13 @@
 var app = {};
 
 $(function() { //when DOM is ready...
-	app.users = new UserCollection([
-		{username:'do'},
-		{username:'jesse'},
-		{username:'mitch'}
-	]);
+	app.users = new UserCollection(
+	// 	[
+	// 	{username:'do'},
+	// 	{username:'jesse'},
+	// 	{username:'mitch'}
+	// ]
+);
 
 	app.tasks = new TaskCollection([
 		{

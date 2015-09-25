@@ -1,7 +1,8 @@
 var UserModel = Backbone.Model.extend({
 	defaults: {
 		username:''
-	}
+	},
+	urlRoot: '/users',
 });
 
 var TaskModel = Backbone.Model.extend({
@@ -12,13 +13,19 @@ var TaskModel = Backbone.Model.extend({
 		assignee:'',
 		status:'Unassigned',
 	},
+	urlRoot: '/tasks',
 	initialize: function (opts) {
-		_.extend(this, opts);
+		// _.extend(this, opts);
+		if(opts) {
 		this.fetch();
+	} else {
+		this.createTask();
+	}
 	},
 	assign: function (newUser) {
 		//Change assignment to another person
 		this.set('assignee', newUser);
+		this.save();
 	},
 	statusUpdate: function (newStatus) {
 		//Set new status
@@ -31,6 +38,10 @@ var TaskModel = Backbone.Model.extend({
 	editDescription: function (newDesc) {
 		this.set('description', newDesc);
 		//Update desc
+	},
+	createTask : function() {
+		this.save();
+		this.fetch();
 	}
 	// Add methods if needed...
 	//TODO: Copy this
@@ -45,7 +56,10 @@ var TaskModel = Backbone.Model.extend({
 
 var UserCollection = Backbone.Collection.extend({
 	model:UserModel,
-	url:'/user'
+	url:'/users',
+	initialize: function () {
+		this.fetch();
+	}
 });
 
 
