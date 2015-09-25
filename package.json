@@ -1,0 +1,25 @@
+{
+  "name": "backbone-issue-tracker",
+  "version": "1.0.0",
+  "description": "Tazk",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.14.0",
+    "express": "^4.13.3",
+    "morgan": "^1.6.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/issuez/backbone-issue-tracker.git"
+  },
+  "author": "Jesse Mitch Yah",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/issuez/backbone-issue-tracker/issues"
+  },
+  "homepage": "https://github.com/issuez/backbone-issue-tracker#readme"
+}

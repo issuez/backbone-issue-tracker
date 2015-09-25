@@ -12,6 +12,10 @@ var TaskModel = Backbone.Model.extend({
 		assignee:'',
 		status:'Unassigned',
 	},
+	initialize: function (opts) {
+		_.extend(this, opts);
+		this.fetch();
+	},
 	assign: function (newUser) {
 		//Change assignment to another person
 		this.set('assignee', newUser);
@@ -40,10 +44,15 @@ var TaskModel = Backbone.Model.extend({
 });
 
 var UserCollection = Backbone.Collection.extend({
-	model:UserModel
+	model:UserModel,
+	url:'/user'
 });
 
 
 var TaskCollection = Backbone.Collection.extend({
-	model:TaskModel
+	model:TaskModel,
+	url:'/tasks',
+	initialize : function () {
+		this.fetch();
+	}
 });

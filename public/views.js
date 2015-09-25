@@ -10,7 +10,7 @@ TaskView = Backbone.View.extend({
 		// console.log("taskview render beginning");
 		var title = "<h2>" + this.model.get('title') + "</h2>";
 		var desc = "<p>" + this.model.get('description') + "</p>";
-		var selector = $("<select id='assignee'>");
+		var selector = $("<select id='status'>");
 		var infobox = $("<div>");
 		var creator = "<p>Creator: " + this.model.get('creator') + "</p>";
 		var statusArr = ["Unassigned", "Assigned", "In Progress", "Done"];
@@ -49,8 +49,11 @@ TaskView = Backbone.View.extend({
 
 	},
 	assign: function (newAssignee) {
+
+	},
+	statusUpdate: function (newStatus) {
 		console.log("TaskView assign method");
-		this.model.statusUpdate(newAssignee.target.value);
+		this.model.statusUpdate(newStatus.target.value);
 		this.removeView();
 		// else {
 		// 	console.log("yes assignee!");
@@ -65,9 +68,6 @@ TaskView = Backbone.View.extend({
 		// 	infobox.append(creator);
 		// 	this.$el.html(taskbox);
 		// }
-	},
-	statusUpdate: function () {
-
 	},
 	removeView: function () {
 		console.log("TaskLog remove method");
@@ -117,8 +117,6 @@ var UnassignedTasksView = Backbone.View.extend({
 	},
 	initialize : function () {
 		// console.log("UnassignedTasksView initializing");
-
-
 		this.listenTo(app.tasks, 'add', this.addView);
 		this.listenTo(app.tasks, 'change:status', this.addView);
 		// this.listenTo(Changes to this view and re-render)
@@ -126,7 +124,7 @@ var UnassignedTasksView = Backbone.View.extend({
 	},
 	events : {
 		'click #submit' : 'addTask',
-		'click #login'	: 'render'
+		// 'click #login'	: 'render'
 	},
 	addView : function (newModel) {
 		if(newModel.get('status') === 'Unassigned') {
