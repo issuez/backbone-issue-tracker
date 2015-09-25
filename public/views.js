@@ -52,9 +52,9 @@ TaskView = Backbone.View.extend({
 
 	},
 	statusUpdate: function (newStatus) {
-		console.log("TaskView assign method");
+		console.log("TaskView statusUpdate method");
 		this.model.statusUpdate(newStatus.target.value);
-		this.removeView();
+		// this.removeView();
 		// else {
 		// 	console.log("yes assignee!");
 		// 	var statusArr = ["New", "In progress", "Done"];
@@ -69,10 +69,10 @@ TaskView = Backbone.View.extend({
 		// 	this.$el.html(taskbox);
 		// }
 	},
-	removeView: function () {
-		console.log("TaskLog remove method");
-		this.remove();
-	}
+	// removeView: function () {
+	// 	console.log("TaskLog remove method");
+	// 	this.remove();
+	// }
 });
 
 var CreateTaskView = Backbone.View.extend({
@@ -109,29 +109,36 @@ var CreateTaskView = Backbone.View.extend({
 var UnassignedTasksView = Backbone.View.extend({
 	id: "unassignedTasks",
 	render: function () {
+		this.$el.remove();
+		var title = '<h2> Unassigned Tasks</h2>';
+		this.$el.append(title);
+		var self = this;
 		var unassigned = app.tasks.where({'status': 'Unassigned'});
 		unassigned.forEach(function(e){
+			console.log();
 			var tasks = new TaskView({model: e});
+			self.$el.append(tasks.$el);
 		});
 		// console.log("UnassignedTasksView rendering");
 	},
 	initialize : function () {
-		// console.log("UnassignedTasksView initializing");
+		console.log("UnassignedTasksView initializing");
 		this.listenTo(app.tasks, 'add', this.addView);
-		this.listenTo(app.tasks, 'change:status', this.addView);
+		this.listenTo(app.tasks, 'change:status', this.render);
 		// this.listenTo(Changes to this view and re-render)
+		this.listenTo(app.tasks, 'update', this.render);
 		this.render();
 	},
 	events : {
 		'click #submit' : 'addTask',
 		// 'click #login'	: 'render'
 	},
-	addView : function (newModel) {
-		if(newModel.get('status') === 'Unassigned') {
-			var view = new TaskView({model : newModel});
-			this.$el.append(view.$el);
-		}
-	},
+	// addView : function (newModel) {
+	// 	if(newModel.get('status') === 'Unassigned') {
+	// 		var view = new TaskView({model : newModel});
+	// 		this.$el.append(view.$el);
+	// 	}
+	// },
 
 	// removeView: function (newModel) {
 	// 	this.$el.remove(newModel);
@@ -173,23 +180,26 @@ var UserView = Backbone.View.extend({
 	render : function () {
 		console.log('UserView Rendering');
 		var logout = '<button id="logout"> Logout </button>';
+		var title = '<h1> Hi ' + this.model.get('username') + ' !</h1>';
 		// var cookie = localStorage.getItem('userName');
 		// var userTasks = app.tasks.where({'assignee': cookie, 'creator': cookie });
-		// console.log(userTasks);
-		unassignedTasksView = new UnassignedTasksView({collection: app.tasks});
-		userTasksView = new UserTasksView({collection: app.tasks});
+		// console.log(userTasks)
+		unassignedTasksView = new UnassignedTasksView({model: this.model});
+		userTasksView = new UserTasksView({model: this.model});
 		createTaskView = new CreateTaskView();
 
 		// unassignedTasksView.render();
 		// userTasksView.render();
+		this.$el.remove();
 		this.$el.append(logout);
+		this.$el.append(title);
 		this.$el.append(unassignedTasksView.$el);
 		this.$el.append(userTasksView.$el);
 		this.$el.append(createTaskView.$el);
 	},
 	initialize: function () {
-		app.tasks.fetch();
-		app.users.fetch();
+		// app.tasks.fetch();
+		// app.users.fetch();
 		this.render();
 		// app.tasks.add([
 		// 	{
@@ -248,12 +258,13 @@ var LoginView = Backbone.View.extend({
 		var welcome = '<h2 id=""></h2>';
 		var selector = $("<select id='users'>");
 		var users = "<option selected='selected'> </option>";
-		var people = app.users.fetch('username');
+		var people = app.users.pluck('username');
+		console.log(app.users);
 		for (var j=0; j<people.length; j++) {
 			users += "<option>" + people[j] + "</option>";
 		}
 		selector.append(users);
-		this.$el.append(selector);
+		this.$el.html(selector);
 	},
 	events : {
 		'change #users' : 'setCookie',
@@ -262,25 +273,29 @@ var LoginView = Backbone.View.extend({
 	initialize : function () {
 		this.listenTo(UserView.logout, 'change', this.render);
 		this.render();
+		this.listenTo(app.users, 'update', this.render);
 	},
 	setCookie : function (newUser) {
 		// console.log("Cookies are being set");
 		var name = newUser.target.value;
 		// console.log(name);
-		localStorage.setItem('userName', name);
-		// this.$el.hide();
-		// $('#userView').show();
-		var userView = new UserView({collection: app.tasks});
-		$('#app').append(userView.$el);
+		// localStorage.setItem('userName', name);
+		// var person = app.users.pluck('username');
+		// var num = person.indexOf(name);
+		// var neoUser = new UserModel({"id": num});
+		var neoUser = app.users.where({username: name})[0];
+		var userView = new UserView({"model": neoUser});
+		// console.log('neoUser', neoUser);
+		$('#app').html(userView.$el);
 	},
 });
 
 // generic ctor to represent interface:
 function GUI(users,tasks,el) {
 	var loginView = new LoginView({collection: users});
-	var userView = new UserView({collection: tasks});
+	// var userView = new UserView({collection: tasks});
 	// if(localStorage.getItem('userName')) {
-		$(el).append(userView.$el.hide());
+		// $(el).append(userView.$el.hide());
 	// } else {
 		$(el).append(loginView.$el);
 	// }

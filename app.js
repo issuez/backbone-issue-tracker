@@ -5,6 +5,8 @@ var fs = require('fs');
 var path = require('path');
 var app = express();
 
+
+app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -17,7 +19,7 @@ var testValues = [	{
     description: "let's figure out backbone goddammit",
     creator: 'mitch',
     assignee: '',
-    status: 'unassigned'
+    status: 'Unassigned'
   },
   {
     title: 'eat a snack',
@@ -25,7 +27,16 @@ var testValues = [	{
     creator: 'do',
     assignee: 'do',
     status: 'New'
-  }];
+  },
+  {
+    title: 'Newest Task',
+    description: "healthy one",
+    creator: '',
+    assignee: '',
+    status: 'Unassigned'
+  }
+
+];
 
 var users = [
   {username:'do'},
@@ -62,6 +73,7 @@ app.get('/users', function (req, res) {
 	var usersAndIDs = users.map(function (v, i) {
 		return {id : i, username: v.username};
 	});
+  console.log(usersAndIDs);
 	res.send(usersAndIDs);
 });
 

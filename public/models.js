@@ -30,6 +30,7 @@ var TaskModel = Backbone.Model.extend({
 	statusUpdate: function (newStatus) {
 		//Set new status
 		this.set('status', newStatus);
+		this.save();
 	},
 	editTitle: function (newTitle) {
 		this.set('title', newTitle);
